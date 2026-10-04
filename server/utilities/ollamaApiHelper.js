@@ -1,6 +1,9 @@
-import {code,lang,question} from "./leetcodeApi.js"
+import dotenv from "dotenv";
+import path from "path";
 
-const OLLAMA_BASE_URL = `http://localhost:${process.env.OLLAMA_PORT}`;
+dotenv.config({path:path.resolve(process.cwd(),"../../.env")});
+
+const OLLAMA_BASE_URL = `http://localhost:8080`;
 
 export async function generateCodeAnalysisWithOllama(rawCode, language, questionTitle) {
     const prompt = `
@@ -22,7 +25,7 @@ export async function generateCodeAnalysisWithOllama(rawCode, language, question
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                model: 'qwen3:4b', 
+                model: 'gemma2:2b', 
                 messages: [
                     {
                         role: 'system',
@@ -36,8 +39,11 @@ export async function generateCodeAnalysisWithOllama(rawCode, language, question
                 stream: false, // Disables streaming chunks; returns a single JSON object once inference finishes
                 options: {
                     temperature: 0.2,
-                    num_predict: 400 // Lower entropy for consistent and deterministic algorithmic analysis
+                    // num_predict: 2048, // Give it a massive runway to think
+                    // repeat_penalty: 1.15,
+                    // stop: ["<|im_end|>", "<|endoftext|>"]
                 }
+
             })
         });
 

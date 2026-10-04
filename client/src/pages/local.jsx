@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Terminal, Database, Code2, Play, Settings2 } from 'lucide-react';
+import { ArrowLeft, Terminal, Database, Code2, Play, Settings2, Loader2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
+
+const BACKEND_PORT=3000;
 
 export default function LocalPage() {
   // The state machine determining which input UI to project
   const [ingestionMode, setIngestionMode] = useState('api'); // 'api' | 'manual'
+  const [isLoading, setIsLoading] = useState(false); //loading animation
+  const navigate = useNavigate();
+
 
   // Form State
   const [formData, setFormData] = useState({
@@ -20,11 +26,32 @@ export default function LocalPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // This is where we will map the state to our Express POST request
-    console.log("Dispatching payload to pipeline:", { mode: ingestionMode, ...formData });
-  };
+    setIsLoading(true); // Lock the UI
+
+    try {
+        const response = await fetch('/api/local', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({mode:ingestionMode,...formData})
+        });
+        
+        const data = await response.json();
+        
+        navigate('/result', { 
+            state: { 
+                markdown: data.markdown, 
+                title: data.title || "LeetCode Note" 
+            } 
+        });
+    } catch (error) {
+        console.error("Pipeline failure:", error);
+        alert("Inference engine failed to generate notes.");
+    } finally {
+        setIsLoading(false); // Unlock if there's an error (navigation unmounts it otherwise)
+    }
+};
 
   return (
     <div style={styles.pageWrapper}>
@@ -174,9 +201,21 @@ export default function LocalPage() {
 
             {/* Shared Submit Action */}
             <div style={styles.actionRow}>
-              <button type="submit" style={styles.submitBtn}>
-                <Play size={18} /> Execute Pipeline
-              </button>
+              <button 
+                    type="submit" 
+                    disabled={isLoading} 
+                    style={{
+                        ...styles.submitBtn,
+                        opacity: isLoading ? 0.7 : 1,
+                        cursor: isLoading ? 'not-allowed' : 'pointer'
+                    }}
+                >
+                    {isLoading ? (
+                        <><Loader2 size={18} className="animate-spin" style={styles.spin} /> Computing Notes...</>
+                    ) : (
+                        <><Play size={18} /> Execute Pipeline</>
+                    )}
+                </button>
             </div>
           </form>
         </div>
@@ -184,6 +223,7 @@ export default function LocalPage() {
     </div>
   );
 }
+
 
 const styles = {
   pageWrapper: {

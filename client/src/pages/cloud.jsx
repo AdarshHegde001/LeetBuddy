@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Cloud, Database, Code2, Play, Settings2 } from 'lucide-react';
+import { ArrowLeft, Terminal,Cloud, Database, Code2, Play, Settings2, Loader2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
+
+const BACKEND_PORT=3000;
 
 export default function CloudPage() {
   const [ingestionMode, setIngestionMode] = useState('api'); // 'api' | 'manual'
+  const [isLoading, setIsLoading] = useState(false); //loading animation
+    const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     username: '',
@@ -18,9 +23,31 @@ export default function CloudPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Dispatching payload to Cloud pipeline:", { mode: ingestionMode, ...formData });
+  const  handleSubmit = async (e) => {
+      e.preventDefault();
+      setIsLoading(true); // Lock the UI
+
+      try {
+          const response = await fetch('/api/cloud', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({mode:ingestionMode,...formData})
+          });
+          
+          const data = await response.json();
+          
+          navigate('/result', { 
+              state: { 
+                  markdown: data.markdown, 
+                  title: data.title || "LeetCode Note" 
+              } 
+          });
+      } catch (error) {
+          console.error("Pipeline failure:", error);
+          alert("Inference engine failed to generate notes.");
+      } finally {
+          setIsLoading(false); // Unlock if there's an error (navigation unmounts it otherwise)
+      }
   };
 
   return (
@@ -171,8 +198,20 @@ export default function CloudPage() {
 
             {/* Shared Submit Action */}
             <div style={styles.actionRow}>
-              <button type="submit" style={styles.submitBtn}>
-                <Play size={18} /> Execute Cloud Pipeline
+               <button 
+                    type="submit" 
+                    disabled={isLoading} 
+                    style={{
+                    ...styles.submitBtn,
+                    opacity: isLoading ? 0.7 : 1,
+                    cursor: isLoading ? 'not-allowed' : 'pointer'
+                    }}
+                    >
+                    {isLoading ? (
+                    <><Loader2 size={18} className="animate-spin" style={styles.spin} /> Computing Notes...</>
+                    ) : (
+                    <><Play size={18} /> Execute Pipeline</>
+                    )}
               </button>
             </div>
           </form>

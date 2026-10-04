@@ -35,7 +35,7 @@ export async function fetchLeetCodeGraphQL(query, variables, sessionCookie = "")
 
 
 
-export const getRecentAccepted = async (username) => {
+export const getRecentAccepted = async (username,queNo) => {
     //graphQL syntax for leetcode
     const query = `
         query recentAcSubmissions($username: String!, $limit: Int!) {
@@ -50,7 +50,7 @@ export const getRecentAccepted = async (username) => {
 
     const variables = {
         username: username,
-        limit: 5 
+        limit: queNo
     };
 
     const data = await fetchLeetCodeGraphQL(query, variables);
