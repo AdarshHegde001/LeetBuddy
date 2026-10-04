@@ -1,6 +1,6 @@
 import {code,lang,question} from "./leetcodeApi.js"
 
-const OLLAMA_BASE_URL = 'http://localhost:8080';
+const OLLAMA_BASE_URL = `http://localhost:${process.env.OLLAMA_PORT}`;
 
 async function generateCodeAnalysisWithOllama(rawCode, language, questionTitle) {
     const prompt = `

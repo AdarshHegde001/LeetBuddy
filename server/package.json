@@ -1,0 +1,16 @@
+{
+  "name": "leetbuddy",
+  "version": "1.0.0",
+  "description": "leetcode notes helper",
+  "main": "leetcodeApi.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start":"node server.js"
+  },
+  "author": "Adarsh Hegde",
+  "license": "ISC",
+  "dependencies": {
+    "@google/genai": "^2.27.0",
+    "dotenv": "^18.0.5"
+  }
+}

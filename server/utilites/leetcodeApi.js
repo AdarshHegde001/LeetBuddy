@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
+import path from "path";
 
-dotenv.config();
+dotenv.config({path:path.resolve(process.cwd(),"../../.env")});
 
 async function fetchLeetCodeGraphQL(query, variables, sessionCookie = "") {
     const endpoint = 'https://leetcode.com/graphql';
@@ -98,3 +99,4 @@ export const code=data.submissionDetails.code;
 export const lang=data.submissionDetails.lang.name;
 export const question=data.submissionDetails.question.title;
 
+console.log(code);
