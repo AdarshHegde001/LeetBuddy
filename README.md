@@ -27,7 +27,7 @@ LeetBuddy operates on a dynamic machine learning pipeline, abstracting model exe
 
 ### 2. Clone the Repository
 ```bash
-git clone [https://github.com/YOUR_USERNAME/LeetBuddy.git](https://github.com/YOUR_USERNAME/LeetBuddy.git)
+git clone https://github.com/AdarshHegde001/LeetBuddy.git
 cd LeetBuddy
 ```
 
