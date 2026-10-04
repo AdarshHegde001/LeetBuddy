@@ -2,6 +2,8 @@ import express from "express";
 import dotenv from "dotenv";
 import path from "path";
 import cors from "cors";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 import * as leetApi from "./utilities/leetcodeApi.js";
 import * as ollamaApi from "./utilities/ollamaApiHelper.js";
 import * as geminiApi from "./utilities/geminiApiHelper.js";
@@ -9,19 +11,25 @@ import * as geminiApi from "./utilities/geminiApiHelper.js";
 dotenv.config({path:path.resolve(process.cwd(),"../.env")});
 const FRONTEND_PORT=process.env.FRONTEND_PORT || 5173;
 
+const aiLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 10
+});
+
 const app=express();
 
+app.use(helmet())
 app.use(cors({
     origin: `http://localhost:${FRONTEND_PORT}`, 
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true 
 }));
 
-app.use(express.json());
+app.use(express.json({limit:"100kb"}));
 app.use(express.urlencoded({extended:true}));
 
 
-app.post("/api/local",async (req,res)=>{
+app.post("/api/local",aiLimiter,async (req,res)=>{
     if(req.body.mode=="manual"){
          const { manualCode, language, problemTitle } = req.body;
          try {
@@ -80,7 +88,7 @@ app.post("/api/local",async (req,res)=>{
     }
 });
 
-app.post("/api/cloud",async (req,res)=>{
+app.post("/api/cloud",aiLimiter,async (req,res)=>{
     if(req.body.mode=="manual"){
          const { manualCode, language, problemTitle } = req.body;
          try {
