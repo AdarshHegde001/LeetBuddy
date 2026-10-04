@@ -3,7 +3,7 @@ import path from "path";
 
 dotenv.config({path:path.resolve(process.cwd(),"../../.env")});
 
-const OLLAMA_BASE_URL = `http://localhost:8080`;
+const OLLAMA_BASE_URL = `http://localhost:${process.env.OLLAMA_PORT}`;
 
 export async function generateCodeAnalysisWithOllama(rawCode, language, questionTitle) {
     const prompt = `
