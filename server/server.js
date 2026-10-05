@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import path from "path";
+import { fileURLToPath } from "url";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
@@ -10,6 +11,9 @@ import * as geminiApi from "./utilities/geminiApiHelper.js";
 
 dotenv.config({path:path.resolve(process.cwd(),"../.env")});
 const FRONTEND_PORT=process.env.FRONTEND_PORT || 5173;
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const aiLimiter = rateLimit({
   windowMs: 60 * 1000,
@@ -28,6 +32,15 @@ app.use(cors({
 app.use(express.json({limit:"100kb"}));
 app.use(express.urlencoded({extended:true}));
 
+
+// Serve React frontend
+
+app.use(express.static(path.join(__dirname, "../client/dist")));
+// React Router fallback
+app.get("/{*splat}", (req, res) => {
+    res.sendFile(path.join(__dirname, "../client/dist/index.html"));
+
+});
 
 app.post("/api/local",aiLimiter,async (req,res)=>{
     if(req.body.mode=="manual"){
