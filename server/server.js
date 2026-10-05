@@ -174,7 +174,7 @@ app.post("/api/cloud",aiLimiter,async (req,res)=>{
 
 
 app.listen(PORT,"0.0.0.0",()=>{
-    console.log("Backen server running on port "+ process.env.BACKEND_PORT);
+    console.log("Backen server running on port "+ PORT);
 });
 
 
