@@ -10,7 +10,11 @@ import * as ollamaApi from "./utilities/ollamaApiHelper.js";
 import * as geminiApi from "./utilities/geminiApiHelper.js";
 
 dotenv.config({path:path.resolve(process.cwd(),"../.env")});
-const FRONTEND_PORT=process.env.FRONTEND_PORT || 5173;
+const FRONTEND_PORT=process.env.FRONTEND_PORT || 5173; 
+
+const PORT=process.env.PORT || 3000;
+
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -169,7 +173,7 @@ app.post("/api/cloud",aiLimiter,async (req,res)=>{
 });
 
 
-app.listen(process.env.BACKEND_PORT,"0.0.0.0",()=>{
+app.listen(PORT,"0.0.0.0",()=>{
     console.log("Backen server running on port "+ process.env.BACKEND_PORT);
 });
 
