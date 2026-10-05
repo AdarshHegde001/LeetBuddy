@@ -3,9 +3,12 @@ import path from "path";
 
 dotenv.config({path:path.resolve(process.cwd(),"../../.env")});
 
-const OLLAMA_BASE_URL = `http://localhost:${process.env.OLLAMA_PORT}`;
+
+console.log(process.env.OLLAMA_PORT)
 
 export async function generateCodeAnalysisWithOllama(rawCode, language, questionTitle) {
+
+    const OLLAMA_BASE_URL = `http://localhost:${process.env.OLLAMA_PORT}`;
     const prompt = `
         Analyze this ${language} solution for "${questionTitle}".
         Focus on algorithmic mechanics and asymptotic analysis:
